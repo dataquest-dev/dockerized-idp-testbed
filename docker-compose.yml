@@ -8,6 +8,7 @@ services:
      - "8444:443"
     depends_on:
       - idp
+      - idp2
 
   idp:
     build:
@@ -31,7 +32,31 @@ services:
      - source: idp_browser
      - source: idp_encryption
      - source: idp_signing
-     - source: idp_sealer     
+     - source: idp_sealer
+
+  idp2:
+    build:
+      context: ./idp2/
+      args:
+        HOSTNAME_FOR_BROWSER: ${HOSTNAME_FOR_BROWSER:-idptestbed}
+    command: []
+    depends_on:
+      ldap:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+    environment:
+     - JETTY_MAX_HEAP=64m
+     - JETTY_BROWSER_SSL_KEYSTORE_PASSWORD=password
+     - JETTY_BACKCHANNEL_SSL_KEYSTORE_PASSWORD=password
+    expose:
+     - "4443"
+    secrets:
+     - source: idp_backchannel
+     - source: idp_browser
+     - source: idp_encryption
+     - source: idp_signing
+     - source: idp_sealer
 
   ldap:
     build: ./ldap/
