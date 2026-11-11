@@ -46,4 +46,16 @@ Both IdPs (`idp`, `idp2`) trust these SPs (`shibboleth-idp/conf/metadata-provide
 | `https://dev-5.pc/shibboleth-sp` | `metadata/sp-metadata.xml` | dev-5.pc:8443 nginx+shibboleth |
 | `https://dev-20.pc:8443/shibboleth-sp` | `metadata/sp-dev20-metadata.xml` | dev-20.pc:8443 SP gateway for all dev-20 repositories, see https://github.com/dataquest-dev/DSpace/wiki/Shibboleth |
 
-Add an SP: save its `/Shibboleth.sso/Metadata` as `metadata/sp-<name>-metadata.xml` in **both** `idp/` and `idp2/`, add one `<MetadataProvider id="SP-<name>" ...>` line next to `TestSP` in both `metadata-providers.xml`, then `docker compose build idp idp2 && docker compose up -d --no-deps idp` (wait for 200 on `/idp/shibboleth`) `&& docker compose up -d --no-deps idp2`.
+Add an SP:
+1. Save its `https://<sp-host>/Shibboleth.sso/Metadata` as `metadata/sp-<name>-metadata.xml` in **both** `idp/shibboleth-idp/` and `idp2/shibboleth-idp/`.
+2. Add one line next to `TestSP` in **both** `shibboleth-idp/conf/metadata-providers.xml`:
+   `<MetadataProvider id="SP-<name>" xsi:type="FilesystemMetadataProvider" metadataFile="%{idp.home}/metadata/sp-<name>-metadata.xml"/>`
+3. Attributes: `attribute-filter.xml` policies use `ANY`, so a new SP gets the same attributes as the others (idp2 never releases eppn).
+4. Rebuild and recreate one IdP at a time (`restart` is not enough, files are baked into the image):
+   ```sh
+   docker compose build idp idp2
+   docker compose up -d --no-deps idp
+   # test an SP-initiated login through idp, then:
+   docker compose up -d --no-deps idp2
+   # test an SP-initiated login through idp2
+   ```
