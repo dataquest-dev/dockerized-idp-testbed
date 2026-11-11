@@ -37,3 +37,13 @@ A docker-compose setup that runs
 The idp and sp know each other's metadata. These contain the url bindings where they expect communication. These urls must be reacheable from user's browser. Also the sp makes some assumptions based on the servername (configured in httpd).
 You can change the `.env` file (there's just `HOSTNAME_FOR_BROWSER`) and `docker-compose build`. This should be the hostname of the httpd-proxy container. The name must be resolvable at the test machine - where the browser runs. The project originally used `idptestbed` as the hostname; that's the default if there's no `HOSTNAME_FOR_BROWSERS`. Originally, it was suggested to modify `/etc/hosts`.
 
+
+## Registered SPs
+Both IdPs (`idp`, `idp2`) trust these SPs (`shibboleth-idp/conf/metadata-providers.xml`):
+
+| SP entityID | metadata file | what |
+|---|---|---|
+| `https://dev-5.pc/shibboleth-sp` | `metadata/sp-metadata.xml` | dev-5.pc:8443 nginx+shibboleth |
+| `https://dev-20.pc:8443/shibboleth-sp` | `metadata/sp-dev20-metadata.xml` | dev-20.pc:8443 SP gateway for all dev-20 repositories, see https://github.com/dataquest-dev/DSpace/wiki/Shibboleth |
+
+Add an SP: save its `/Shibboleth.sso/Metadata` as `metadata/sp-<name>-metadata.xml` in **both** `idp/` and `idp2/`, add one `<MetadataProvider id="SP-<name>" ...>` line next to `TestSP` in both `metadata-providers.xml`, then `docker compose build idp idp2 && docker compose up -d --no-deps idp` (wait for 200 on `/idp/shibboleth`) `&& docker compose up -d --no-deps idp2`.

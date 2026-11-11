@@ -26,6 +26,8 @@
     <!-- ========================================================================================== -->
 
     <MetadataProvider id="TestSP"  xsi:type="FilesystemMetadataProvider" metadataFile="%{idp.home}/metadata/sp-metadata.xml"/>
+    <!-- dev-20.pc Docker SP gateway (one SP for all repositories on dev-20), see https://github.com/dataquest-dev/DSpace/wiki/Shibboleth -->
+    <MetadataProvider id="SP-dev20" xsi:type="FilesystemMetadataProvider" metadataFile="%{idp.home}/metadata/sp-dev20-metadata.xml"/>
 
     <!-- Example HTTP metadata provider.  Use this if you want to download
          the metadata from a remote service.
