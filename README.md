@@ -38,6 +38,8 @@ The idp and sp know each other's metadata. These contain the url bindings where 
 You can change the `.env` file (there's just `HOSTNAME_FOR_BROWSER`) and `docker-compose build`. This should be the hostname of the httpd-proxy container. The name must be resolvable at the test machine - where the browser runs. The project originally used `idptestbed` as the hostname; that's the default if there's no `HOSTNAME_FOR_BROWSERS`. Originally, it was suggested to modify `/etc/hosts`.
 
 
+> **Security:** the IdP signing/encryption keys in `secrets/` are public test keys (upstream UniconLabs testbed). Anyone can forge a login from `https://idptestbed/idp/shibboleth` or `https://someother/idp/shibboleth`. Only trust these IdPs on test SPs with no real data and no real admin accounts.
+
 ## Registered SPs
 Both IdPs (`idp`, `idp2`) trust these SPs (`shibboleth-idp/conf/metadata-providers.xml`):
 
