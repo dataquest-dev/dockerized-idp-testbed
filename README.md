@@ -52,7 +52,7 @@ Add an SP:
 1. Save its `https://<sp-host>/Shibboleth.sso/Metadata` as `metadata/sp-<name>-metadata.xml` in **both** `idp/shibboleth-idp/` and `idp2/shibboleth-idp/`.
 2. Add one line next to `TestSP` in **both** `shibboleth-idp/conf/metadata-providers.xml`:
    `<MetadataProvider id="SP-<name>" xsi:type="FilesystemMetadataProvider" metadataFile="%{idp.home}/metadata/sp-<name>-metadata.xml"/>`
-3. Attributes: `attribute-filter.xml` policies use `ANY`, so a new SP gets the same attributes as the others (idp2 never releases eppn).
+3. Attributes: the `RS` policy in `attribute-filter.xml` uses `ANY` (other policies need entity attributes/groups our test SPs do not have), so a new SP gets the same attributes as the others (idp2 never releases eppn).
 4. Rebuild and recreate one IdP at a time (`restart` is not enough, files are baked into the image):
    ```sh
    docker compose build idp idp2
