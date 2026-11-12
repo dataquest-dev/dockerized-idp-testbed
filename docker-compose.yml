@@ -4,6 +4,7 @@ services:
   #This handles all of the http request to simple cert issues and both the SP and IdP can share the same ports.
   httpd-proxy:
     build: ./httpd-proxy/
+    restart: unless-stopped
     ports:
      - "8444:443"
     depends_on:
@@ -15,6 +16,7 @@ services:
       context: ./idp/
       args:
         HOSTNAME_FOR_BROWSER: ${HOSTNAME_FOR_BROWSER:-idptestbed}
+    restart: unless-stopped
     command: []
     depends_on: 
       ldap:
@@ -39,6 +41,7 @@ services:
       context: ./idp2/
       args:
         HOSTNAME_FOR_BROWSER: ${HOSTNAME_FOR_BROWSER:-idptestbed}
+    restart: unless-stopped
     command: []
     depends_on:
       ldap:
@@ -60,9 +63,11 @@ services:
 
   ldap:
     build: ./ldap/
+    restart: unless-stopped
 
   mysql:
     image: mysql:5.7.42
+    restart: unless-stopped
     environment:
       #- MYSQL_ROOT_PASSWORD=password
       - MYSQL_ALLOW_EMPTY_PASSWORD=t
